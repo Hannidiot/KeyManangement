@@ -1,0 +1,39 @@
+@baseUrl = http://localhost:5000/api/auth
+@contentType = application/json
+
+### Register a new user
+POST {{baseUrl}}/register
+Content-Type: {{contentType}}
+
+{
+    "username": "testuser1",
+    "password": "testpass123"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/login
+Content-Type: {{contentType}}
+
+{
+    "username": "testuser1",
+    "password": "testpass123"
+}
+
+### Store the token from login response
+@authToken = Bearer {{login.response.body.access_token}}
+
+### Logout (requires authentication)
+POST {{baseUrl}}/logout
+Authorization: {{authToken}}
+Content-Type: {{contentType}}
+
+### Change Password (requires authentication)
+POST {{baseUrl}}/change-password
+Authorization: {{authToken}}
+Content-Type: {{contentType}}
+
+{
+    "old_password": "testpass123",
+    "new_password": "newpass123"
+} 
