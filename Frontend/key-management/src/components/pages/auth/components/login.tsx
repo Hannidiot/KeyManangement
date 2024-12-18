@@ -6,9 +6,9 @@ import {
   useRouterContext,
   useRouterType,
   useTranslate,
-  LoginFormTypes,
   LoginPageProps,
 } from "@refinedev/core";
+import { LoginFormTypes } from "@/types/auth";
 
 type DivPropsType = React.DetailedHTMLProps<
   React.HTMLAttributes<HTMLDivElement>,
@@ -40,7 +40,7 @@ export const LoginPage: React.FC<LoginProps> = ({
 
   const ActiveLink = routerType === "legacy" ? LegacyLink : Link;
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
 
@@ -100,7 +100,7 @@ export const LoginPage: React.FC<LoginProps> = ({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              login({ ...mutationVariables, email, password, remember });
+              login({ ...mutationVariables, username, password, remember });
             }}
             {...formProps}
           >
@@ -111,20 +111,20 @@ export const LoginPage: React.FC<LoginProps> = ({
                 padding: 25,
               }}
             >
-              <label htmlFor="email-input">
-                {translate("pages.login.fields.email", "Email")}
+              <label htmlFor="username-input">
+                {translate("pages.login.fields.username", "Username")}
               </label>
               <input
-                id="email-input"
-                name="email"
+                id="username-input"
+                name="username"
                 type="text"
                 size={20}
                 autoCorrect="off"
                 spellCheck={false}
                 autoCapitalize="off"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
               <label htmlFor="password-input">
                 {translate("pages.login.fields.password", "Password")}
