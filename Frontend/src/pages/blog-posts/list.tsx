@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useMany } from "@refinedev/core";
 import {
@@ -5,16 +6,13 @@ import {
   DeleteButton,
   EditButton,
   List,
-  MarkdownField,
   ShowButton,
   useDataGrid,
 } from "@refinedev/mui";
 import React from "react";
 
 export const BlogPostList = () => {
-  const { dataGridProps } = useDataGrid({
-    syncWithLocation: true,
-  });
+  const { dataGridProps } = useDataGrid({});
 
   const { data: categoryData, isLoading: categoryIsLoading } = useMany({
     resource: "categories",
@@ -34,29 +32,42 @@ export const BlogPostList = () => {
         headerName: "ID",
         type: "number",
         minWidth: 50,
+        display: "flex",
+        align: "left",
+        headerAlign: "left",
       },
       {
         field: "title",
-        flex: 1,
         headerName: "Title",
         minWidth: 200,
+        display: "flex",
       },
       {
         field: "content",
         flex: 1,
         headerName: "Content",
         minWidth: 250,
+        display: "flex",
         renderCell: function render({ value }) {
           if (!value) return "-";
-          return <MarkdownField value={value?.slice(0, 80) + "..." || ""} />;
+          return (
+            <Typography
+              component="p"
+              whiteSpace="pre"
+              overflow="hidden"
+              textOverflow="ellipsis"
+            >
+              {value}
+            </Typography>
+          );
         },
       },
       {
         field: "category",
-        flex: 1,
         headerName: "Category",
-        minWidth: 300,
-        valueGetter: ({ row }) => {
+        minWidth: 160,
+        display: "flex",
+        valueGetter: (_, row) => {
           const value = row?.category;
           return value;
         },
@@ -70,15 +81,15 @@ export const BlogPostList = () => {
       },
       {
         field: "status",
-        flex: 1,
         headerName: "Status",
-        minWidth: 200,
+        minWidth: 80,
+        display: "flex",
       },
       {
         field: "createdAt",
-        flex: 1,
         headerName: "Created at",
-        minWidth: 250,
+        minWidth: 120,
+        display: "flex",
         renderCell: function render({ value }) {
           return <DateField value={value} />;
         },
@@ -86,7 +97,11 @@ export const BlogPostList = () => {
       {
         field: "actions",
         headerName: "Actions",
+        align: "right",
+        headerAlign: "right",
+        minWidth: 120,
         sortable: false,
+        display: "flex",
         renderCell: function render({ row }) {
           return (
             <>
@@ -96,17 +111,14 @@ export const BlogPostList = () => {
             </>
           );
         },
-        align: "center",
-        headerAlign: "center",
-        minWidth: 80,
       },
     ],
-    [categoryData]
+    [categoryData, categoryIsLoading]
   );
 
   return (
     <List>
-      <DataGrid {...dataGridProps} columns={columns} autoHeight />
+      <DataGrid {...dataGridProps} columns={columns} />
     </List>
   );
 };
