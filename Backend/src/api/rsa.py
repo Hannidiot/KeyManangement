@@ -5,7 +5,7 @@ from cryptography.hazmat.backends import default_backend
 import io
 import zipfile
 
-from models import RSAKeyPair
+from models import RSASecretContent
 from extensions import db
 
 bp = Blueprint('rsa_key', __name__)
@@ -65,7 +65,7 @@ def get_public_key(id):
               type: string
               example: Key pair not found for the given user ID.
     """
-    key_pair = RSAKeyPair.query.filter_by(id=id).first()
+    key_pair = RSASecretContent.query.filter_by(id=id).first()
     if key_pair:
         return jsonify({
             'public_key': key_pair.public_key
@@ -102,7 +102,7 @@ def download_keys(id):
               type: string
               example: Key pair not found for the given user ID.
     """
-    key_pair = RSAKeyPair.query.filter_by(id=id).first()
+    key_pair = RSASecretContent.query.filter_by(id=id).first()
     if not key_pair:
         return jsonify({'error': 'Key pair not found for the given user ID.'}), 404
     
@@ -141,12 +141,12 @@ def generate_rsa_key_pair():
     return private_pem, public_pem
 
 def store_rsa_keys(private_pem, public_pem):
-    existing_keys = RSAKeyPair.query.filter_by().first()
+    existing_keys = RSASecretContent.query.filter_by().first()
     if existing_keys:
         existing_keys.private_key = private_pem
         existing_keys.public_key = public_pem
     else:
-        new_key_pair = RSAKeyPair(
+        new_key_pair = RSASecretContent(
             private_key=private_pem,
             public_key=public_pem
         )

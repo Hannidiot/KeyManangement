@@ -1,0 +1,60 @@
+### Variables
+@baseUrl = http://localhost:5000/api/projects
+@contentType = application/json
+
+### Create a new project
+POST {{baseUrl}}
+Content-Type: {{contentType}}
+
+{
+    "project_name": "Authentication Service",
+    "description": "Project for managing authentication keys and secrets"
+}
+
+### Create a project without description
+POST {{baseUrl}}
+Content-Type: {{contentType}}
+
+{
+    "project_name": "Payment Gateway"
+}
+
+### Create a project (should fail - missing project_name)
+POST {{baseUrl}}
+Content-Type: {{contentType}}
+
+{
+    "description": "This should fail"
+}
+
+### Get all projects
+GET {{baseUrl}}
+
+### Get a specific project
+GET {{baseUrl}}/1
+
+### Get a non-existent project (should return 404)
+GET {{baseUrl}}/999
+
+### Update a project
+PUT {{baseUrl}}/1
+Content-Type: {{contentType}}
+
+{
+    "project_name": "Updated Auth Service",
+    "description": "Updated description for authentication service"
+}
+
+### Update project description only
+PUT {{baseUrl}}/1
+Content-Type: {{contentType}}
+
+{
+    "description": "Only updating the description"
+}
+
+### Delete a project
+DELETE {{baseUrl}}/1
+
+### Delete a non-existent project (should return 404)
+DELETE {{baseUrl}}/999

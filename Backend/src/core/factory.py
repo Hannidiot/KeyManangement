@@ -2,6 +2,8 @@ from flask import Flask
 from extensions import db
 from flasgger import Swagger
 from api.rsa import bp as keys_bp
+from api.project import bp as project_bp
+from api.secret import bp as secret_bp
 
 def create_app(config_object):
     app = Flask(__name__)
@@ -66,11 +68,19 @@ def configure_swagger(app):
 
 def register_blueprints(app):
     # Register blueprints with URL prefix
+    from api.rsa import bp as keys_bp
+    from api.project import bp as project_bp
+    from api.secret import bp as secret_bp
+    
     app.register_blueprint(keys_bp, url_prefix='/api/keys')
+    app.register_blueprint(project_bp, url_prefix='/api/projects')
+    app.register_blueprint(secret_bp, url_prefix='/api/secrets')
 
 def initialize_database(app):
     with app.app_context():
         db.create_all()
+        from models import initialize_secret_types
+        initialize_secret_types()
 
 def configure_logging(app):
     import logging
