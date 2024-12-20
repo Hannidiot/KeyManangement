@@ -1,7 +1,7 @@
 from flask import Flask
-from extensions import db, jwt
+from extensions import db
 from flasgger import Swagger
-from core.jwt import init_jwt
+from api.rsa import bp as keys_bp
 
 def create_app(config_object):
     app = Flask(__name__)
@@ -14,9 +14,6 @@ def create_app(config_object):
     configure_logging(app)
     register_error_handlers(app)
     
-    with app.app_context():
-        init_jwt()
-    
     return app
 
 def configure_app(app, config_object):
@@ -25,20 +22,19 @@ def configure_app(app, config_object):
 def configure_extensions(app):
     # Initialize Flask extensions
     db.init_app(app)
-    jwt.init_app(app)
 
 def configure_swagger(app):
     swagger_config = {
         "headers": [],
         "specs": [
             {
-                "endpoint": 'apispec',
-                "route": '/apispec.json',
+                "endpoint": 'swagger',
+                "route": '/swagger.json',
                 "rule_filter": lambda rule: True,  # all in
                 "model_filter": lambda tag: True,  # all in
             }
         ],
-        "static_url_path": "/flasgger_static",
+        "static_url_path": "/swagger_static",
         "swagger_ui": True,
         "specs_route": "/swagger/"
     }
@@ -51,27 +47,26 @@ def configure_swagger(app):
             "version": "1.0.0"
         },
         "basePath": "/api",
-        "securityDefinitions": {
-            "Bearer": {
-                "type": "apiKey",
-                "name": "Authorization",
-                "in": "header",
-                "description": "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
-            }
-        },
-        "security": [
-            {
-                "Bearer": []
-            }
-        ]
+        # "securityDefinitions": {
+        #     "Bearer": {
+        #         "type": "apiKey",
+        #         "name": "Authorization",
+        #         "in": "header",
+        #         "description": "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+        #     }
+        # },
+        # "security": [
+        #     {
+        #         "Bearer": []
+        #     }
+        # ]
     }
 
     Swagger(app, config=swagger_config, template=template)
 
 def register_blueprints(app):
-    from api.auth import bp as auth_bp
-    
-    app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    # Register blueprints with URL prefix
+    app.register_blueprint(keys_bp, url_prefix='/api/keys')
 
 def initialize_database(app):
     with app.app_context():

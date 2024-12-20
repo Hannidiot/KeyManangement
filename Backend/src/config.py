@@ -6,10 +6,6 @@ class Config:
     TESTING = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI') or 'sqlite:///sqlite.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_ALGORITHM = 'HS256'
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'KeyManangementStaticSecret'
-    JWT_BLACKLIST_ENABLED = True
-    JWT_BLACKLIST_TOKEN_CHECKS = ['access']
 
 class DevelopmentConfig(Config):
     """Development configuration."""
