@@ -1,13 +1,15 @@
 from flask import Blueprint, jsonify, request, send_file
-from models import Secret, RSASecretContent, SecretTypeModel, db, Operation
+from models import Secret, RSASecretContent, db
 from http import HTTPStatus
 from datetime import datetime, UTC
 import io
 import zipfile
+from decorators import log_operation
 
 bp = Blueprint('secret', __name__)
 
 @bp.route('', methods=['POST'])
+@log_operation('create_secret')
 def create_secret():
     """
     Create a new secret
@@ -30,7 +32,7 @@ def create_secret():
               example: "RSA key pair for authentication"
             created_by:
               type: string
-              example: "john.doe"
+              example: "Harris.Han"
             project_id:
               type: integer
               example: 1
@@ -192,6 +194,7 @@ def update_secret(secret_id):
     }), HTTPStatus.OK
 
 @bp.route('/<int:secret_id>', methods=['DELETE'])
+@log_operation('delete_secret')
 def delete_secret(secret_id):
     """
     Delete a secret
@@ -221,6 +224,7 @@ def delete_secret(secret_id):
     return '', HTTPStatus.NO_CONTENT
 
 @bp.route('/<int:secret_id>/download', methods=['GET'])
+@log_operation('download_secret')
 def download_secret(secret_id):
     """
     Download secret content and record the operation
@@ -248,14 +252,6 @@ def download_secret(secret_id):
     if not secret.rsa_content:
         return jsonify({'error': 'No RSA content available for this secret'}), HTTPStatus.NOT_FOUND
     
-    # Record the download operation
-    operation = Operation(
-        key_id=secret_id,
-        download_time=datetime.now(UTC)
-    )
-    db.session.add(operation)
-    db.session.commit()
-    
     memory_file = io.BytesIO()
     with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
         zf.writestr('public_key.pem', secret.rsa_content.public_key)
@@ -267,7 +263,7 @@ Description: {secret.description}
 Created By: {secret.created_by}
 Created At: {secret.created_at}
 Key Size: {secret.rsa_content.key_size} bits
-Download Time: {operation.download_time}
+Download Time: {datetime.now(UTC)}
 """
         zf.writestr('metadata.txt', metadata)
     
@@ -279,34 +275,3 @@ Download Time: {operation.download_time}
         as_attachment=True,
         download_name=f'secret_{secret_id}.zip'
     )
-
-# Add a new endpoint to get download history for a secret
-@bp.route('/<int:secret_id>/downloads', methods=['GET'])
-def get_download_history(secret_id):
-    """
-    Get download history for a secret
-    ---
-    tags:
-      - secret
-    parameters:
-      - name: secret_id
-        in: path
-        type: integer
-        required: true
-    responses:
-      200:
-        description: List of download operations for the secret
-      404:
-        description: Secret not found
-    """
-    secret = Secret.query.get_or_404(secret_id)
-    
-    operations = Operation.query.filter_by(key_id=secret_id)\
-        .order_by(Operation.download_time.desc())\
-        .all()
-    
-    return jsonify([{
-        'id': op.id,
-        'key_id': op.key_id,
-        'download_time': op.download_time.isoformat()
-    } for op in operations]), HTTPStatus.OK 

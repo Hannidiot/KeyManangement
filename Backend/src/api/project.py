@@ -1,10 +1,12 @@
 from flask import Blueprint, jsonify, request
 from models import Project, db
 from http import HTTPStatus
+from decorators import log_operation
 
 bp = Blueprint('project', __name__)
 
 @bp.route('', methods=['POST'])
+@log_operation('create_project')
 def create_project():
     """
     Create a new project
@@ -137,6 +139,7 @@ def update_project(project_id):
     }), HTTPStatus.OK
 
 @bp.route('/<int:project_id>', methods=['DELETE'])
+@log_operation('delete_project')
 def delete_project(project_id):
     """
     Delete a project
