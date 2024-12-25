@@ -1,0 +1,3 @@
+### List all operations
+GET http://localhost:5000/api/operations
+Accept: application/json 

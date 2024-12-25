@@ -21,6 +21,7 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import { Header } from "./components/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { ProjectCreate, ProjectEdit, ProjectList, ProjectShow } from "./pages/projects";
+import { OperationList } from "./pages/operations";
 
 function App() {
   return (
@@ -43,6 +44,10 @@ function App() {
                     create: "/projects/create",
                     edit: "/projects/edit/:id",
                     show: "/projects/show/:id"
+                  },
+                  {
+                    name: "operations",
+                    list: "/operations",
                   },
                 ]}
                 options={{
@@ -70,6 +75,7 @@ function App() {
                       <Route path="edit/:id" element={<ProjectEdit />} />
                       <Route path="show/:id" element={<ProjectShow />} />
                     </Route>
+                    <Route path="/operations" element={<OperationList />} />
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
                 </Routes>

@@ -13,7 +13,7 @@ def log_operation(operation_type):
             try:
                 # Get user_id from request (assuming it's in the created_by field)
                 data = request.get_json() or {}
-                user_id = data.get('created_by', 'anonymous')
+                username = data.get('created_by', 'anonymous')
                 
                 # Prepare details
                 details = {
@@ -26,7 +26,7 @@ def log_operation(operation_type):
                 
                 # Create operation record
                 operation = UserOperation(
-                    user_id=user_id,
+                    username=username,
                     operation=operation_type,
                     details=json.dumps(details)
                 )

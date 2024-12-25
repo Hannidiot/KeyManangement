@@ -89,7 +89,7 @@ class UserOperation(db.Model):
     __tablename__ = 'user_operations'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(100), nullable=False)  # Using created_by as user_id
+    username = db.Column(db.String(100), nullable=False)  # Using created_by as user_id
     operation = db.Column(db.String(255), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.now(UTC))
     details = db.Column(db.Text)
