@@ -84,3 +84,17 @@ def initialize_secret_types():
     
     db.session.commit()
 
+class Operation(db.Model):
+    """Table to store key download operations"""
+    __tablename__ = 'operations'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    key_id = db.Column(db.Integer, db.ForeignKey('secret.id'), nullable=False)
+    download_time = db.Column(db.DateTime, default=datetime.now(UTC), nullable=False)
+    
+    # Relationship with Secret
+    secret = db.relationship('Secret', backref='operations', lazy=True)
+    
+    def __repr__(self):
+        return f'<Operation id={self.id} key_id={self.key_id}>'
+

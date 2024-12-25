@@ -1,0 +1,9 @@
+### Variables
+@baseUrl = http://localhost:5000/api/secrets
+@contentType = application/json
+
+### Download a secret (this will create an operation record)
+GET {{baseUrl}}/1/download
+
+### Get download history for a secret
+GET {{baseUrl}}/1/downloads 
