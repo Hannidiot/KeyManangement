@@ -1,14 +1,5 @@
 # Frontend
 
-<div align="center" style="margin: 30px;">
-    <a href="https://refine.dev">
-    <img alt="refine logo" src="https://refine.ams3.cdn.digitaloceanspaces.com/readme/refine-readme-banner.png">
-    </a>
-</div>
-<br/>
-
-This [Refine](https://github.com/refinedev/refine) project was generated with [create refine-app](https://github.com/refinedev/refine/tree/master/packages/create-refine-app).
-
 ## Getting Started
 
 A React Framework for building internal tools, admin panels, dashboards & B2B apps with unmatched flexibility ✨
@@ -17,22 +8,28 @@ Refine's hooks and components simplifies the development process and eliminates 
 
 ## Available Scripts
 
-### Running the development server.
+### Running the development server
 
 ```bash
     npm run dev
 ```
 
-### Building for production.
+### Building for production
 
 ```bash
     npm run build
 ```
 
-### Running the production server.
+### Running the production server
 
 ```bash
     npm run start
+```
+
+### build and run the docker container
+
+```bash
+    docker build -t key-management-frontend .
 ```
 
 ## Learn More
