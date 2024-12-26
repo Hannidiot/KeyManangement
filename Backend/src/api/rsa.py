@@ -5,6 +5,7 @@ from cryptography.hazmat.backends import default_backend
 import io
 import zipfile
 
+from decorators import log_operation
 from models import RSASecretContent
 from extensions import db
 
@@ -74,6 +75,7 @@ def get_public_key(id):
         return jsonify({'error': 'Key pair not found for the given user ID.'}), 404
 
 @bp.route('/<int:id>/download', methods=['GET'])
+@log_operation('download_rsa_key')
 def download_keys(id):
     """
     Download RSA Key Pair

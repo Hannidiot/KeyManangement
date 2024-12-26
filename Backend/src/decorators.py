@@ -10,9 +10,14 @@ def log_operation(operation_type):
             # Execute the original function
             response = f(*args, **kwargs)
             
+            data = {}
+            try:
+                data = request.get_json()
+            except Exception as e:
+                pass
+            
             try:
                 # Get user_id from request (assuming it's in the created_by field)
-                data = request.get_json() or {}
                 username = data.get('created_by', 'anonymous')
                 
                 # Prepare details

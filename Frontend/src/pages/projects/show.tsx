@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField as MuiTextField } from "@mui/material";
 
 export const ProjectShow = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
   const { queryResult } = useShow({});
   const { data, isLoading } = queryResult;
   const record = data?.data;
@@ -37,7 +38,7 @@ export const ProjectShow = () => {
   const handleCreateRSA = async () => {
     try {
       setIsSubmitting(true);
-      await axios.post('/api/secrets', {
+      await axios.post(`${apiUrl}/secrets`, {
         description: description,
         created_by: "anonymous", // You might want to get this from your auth context
         project_id: record?.id,
@@ -58,7 +59,7 @@ export const ProjectShow = () => {
 
   const handleDownload = async (secretId: number) => {
     try {
-      const response = await axios.get(`/api/secrets/${secretId}/download`, {
+      const response = await axios.get(`${apiUrl}/secrets/${secretId}/download`, {
         responseType: 'blob'
       });
       
