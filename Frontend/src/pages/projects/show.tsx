@@ -2,16 +2,23 @@ import { Stack, Typography, Button } from "@mui/material";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { useShow, useList } from "@refinedev/core";
 import { Show, TextFieldComponent as TextField } from "@refinedev/mui";
-import { Download as DownloadIcon } from "@mui/icons-material";
+import { Download as DownloadIcon, Add as AddIcon } from "@mui/icons-material";
 import axios from "axios";
+import { useState } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField as MuiTextField } from "@mui/material";
 
 export const ProjectShow = () => {
   const { queryResult } = useShow({});
   const { data, isLoading } = queryResult;
   const record = data?.data;
 
+  // State for modal
+  const [open, setOpen] = useState(false);
+  const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Fetch secrets for this project
-  const { data: secretsData, isLoading: secretsIsLoading } = useList({
+  const { data: secretsData, isLoading: secretsIsLoading, refetch } = useList({
     resource: "secrets",
     filters: [
       {
@@ -26,6 +33,28 @@ export const ProjectShow = () => {
       },
     ],
   });
+
+  const handleCreateRSA = async () => {
+    try {
+      setIsSubmitting(true);
+      await axios.post('/api/secrets', {
+        description: description,
+        created_by: "anonymous", // You might want to get this from your auth context
+        project_id: record?.id,
+        secret_type_id: 1,
+        key_size: 2048
+      });
+      
+      setOpen(false);
+      setDescription("");
+      // Refresh the secrets list
+      refetch();
+    } catch (error) {
+      console.error('Failed to create RSA key:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleDownload = async (secretId: number) => {
     try {
@@ -81,7 +110,7 @@ export const ProjectShow = () => {
     {
       field: "actions",
       headerName: "Actions",
-      minWidth: 100,
+      minWidth: 200,
       renderCell: (params: any) => (
         <Button
           startIcon={<DownloadIcon />}
@@ -107,15 +136,23 @@ export const ProjectShow = () => {
         </Typography>
         <TextField value={record?.description} />
 
-        <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
-          RSA Keys
-        </Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2, mb: 1 }}>
+          <Typography variant="h6">
+            RSA Keys
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setOpen(true)}
+          >
+            Generate New RSA Key
+          </Button>
+        </Stack>
         
         <DataGrid
           rows={secretsData?.data || []}
           columns={columns}
           loading={secretsIsLoading}
-          autoHeight
           pageSizeOptions={[5, 10, 25]}
           initialState={{
             pagination: {
@@ -128,6 +165,33 @@ export const ProjectShow = () => {
             },
           }}
         />
+
+        {/* Modal for creating new RSA key */}
+        <Dialog open={open} onClose={() => setOpen(false)}>
+          <DialogTitle>Generate New RSA Key</DialogTitle>
+          <DialogContent>
+            <MuiTextField
+              autoFocus
+              margin="dense"
+              label="Description"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button 
+              onClick={handleCreateRSA} 
+              disabled={!description || isSubmitting}
+              variant="contained"
+            >
+              Generate
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Stack>
     </Show>
   );
