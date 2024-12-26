@@ -24,6 +24,8 @@ import { ProjectCreate, ProjectEdit, ProjectList, ProjectShow } from "./pages/pr
 import { OperationList } from "./pages/operations";
 
 function App() {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   return (
     <BrowserRouter>
       <GitHubBanner />
@@ -34,7 +36,7 @@ function App() {
           <RefineSnackbarProvider>
             <DevtoolsProvider>
               <Refine
-                dataProvider={dataProvider("/api")}
+                dataProvider={dataProvider(apiUrl)}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerBindings}
                 resources={[
